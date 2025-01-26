@@ -7,10 +7,11 @@ import (
 )
 
 func main() {
-	data, _ := os.ReadFile("150.uint64")
+	data, _ := os.ReadFile("1.uint64")
 	num := binary.BigEndian.Uint64(data)
-
+	varint := encode(num)
 	fmt.Println(encode(num))
+	fmt.Println(decode(varint))
 }
 
 func encode(number uint64) []byte {
@@ -42,4 +43,19 @@ func encode(number uint64) []byte {
 	}
 	return out
 
+}
+
+func decode(varints []byte) uint64 {
+	var num uint64
+	var shift uint
+
+	for _, value := range varints {
+
+		parts := uint64(value & 0b01111111) // extracting the 7 bits from each byte
+
+		num |= parts << shift // to bring the bits to its original position we have to left shift it and add it to the num
+		shift += 7
+
+	}
+	return num
 }
